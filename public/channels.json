@@ -1,0 +1,12 @@
+{
+    "sports": [
+        {
+            "name": "Fox sport 1 HD (USA)",
+            "url": "http://194.88.107.95:6204/live/Abas/Abas/10416.ts"
+        },
+        {
+            "name": "Fox sport 2 HD (USA)",
+            "url": "http://194.88.107.95:6204/live/Abas/Abas/10415.ts"
+        }
+    ]
+}
