@@ -9,4 +9,7 @@ var events_controller = require('../../controllers/views/events');
 // NFL Events page
 router.get('/nfl', events_controller.nfl);
 
+// NFL Event Game Detail
+router.get('/nfl/:uid', events_controller.nfl_game);
+
 module.exports = router;
