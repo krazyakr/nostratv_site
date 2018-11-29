@@ -1,4 +1,4 @@
-var Parser_NFLFullHD = require("../business/parsers/parser_nflfullhd");
+var Parser_NFLFullHD = require("../../business/parsers/parser_nflfullhd");
 
 // GET /events/ - get list of existing events
 exports.event_list = function (req, res) {

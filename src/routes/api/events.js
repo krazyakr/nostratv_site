@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // Require controller modules
-var events_controller = require('../controllers/event');
+var events_controller = require('../../controllers/api/event');
 
 // Routes
 

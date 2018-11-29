@@ -18,9 +18,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
 var indexRouter = require('./routes/index');
-var eventsRouter = require('./routes/events');
-var iptvRouter = require('./routes/iptv');
-var playlistRouter = require('./routes/playlist');
+var eventsRouter = require('./routes/api/events');
+var iptvRouter = require('./routes/api/iptv');
+var playlistRouter = require('./routes/api/playlist');
 
 app.use('/', indexRouter);
 app.use('/api/events', eventsRouter);

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // Require controller modules
-var controller = require('../controllers/playlist');
+var controller = require('../../controllers/api/playlist');
 
 // Routes
 

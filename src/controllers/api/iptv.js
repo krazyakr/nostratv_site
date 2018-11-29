@@ -1,4 +1,4 @@
-const HTTPRequest = require("../business/net/httprequest");
+const HTTPRequest = require("../../business/net/httprequest");
 
 const jsonSource = "https://pastebin.com/raw/747LTLG0";
 

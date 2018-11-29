@@ -3,7 +3,7 @@ const HTTPRequest = require("../net/httprequest");
 const DomParser = require('dom-parser');
 
 const baseUrl = "https://www.nflfullhd.com/";
-const sourcePath = "/events/nflfullhd/";
+const sourcePath = "/api/events/nflfullhd/";
 
 var parser = new DomParser();
 

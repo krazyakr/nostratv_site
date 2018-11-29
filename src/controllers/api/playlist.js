@@ -1,4 +1,4 @@
-var Parser_ArenaVision = require( '../business/parsers/parser_arenavision' );
+var Parser_ArenaVision = require( '../../business/parsers/parser_arenavision' );
 
 // GET /api/playlist 
 // Get the list of all IPTV channels in M3U format with all categories included
