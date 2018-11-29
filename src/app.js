@@ -22,7 +22,11 @@ var eventsRouter = require('./routes/api/events');
 var iptvRouter = require('./routes/api/iptv');
 var playlistRouter = require('./routes/api/playlist');
 
+var viewsEventsRouter = require('./routes/views/events');
+
 app.use('/', indexRouter);
+app.use('/events', viewsEventsRouter);
+
 app.use('/api/events', eventsRouter);
 app.use('/api/iptv', iptvRouter);
 app.use('/api/playlist', playlistRouter);
