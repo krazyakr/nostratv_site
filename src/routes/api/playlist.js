@@ -10,6 +10,6 @@ var controller = require('../../controllers/api/playlist');
 router.get('/', controller.channels_list);
 
 /* GET M3U playlist for :category with IPTV channels */
-router.get('/:category', controller.channels_list);
+router.get('/:category', controller.channels_list_by_category);
 
 module.exports = router;
