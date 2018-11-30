@@ -9,11 +9,10 @@ exports.nfl = function (req, res) {
 }
 
 exports.nfl_game = function (req, res) {
-    title = 'NOStraTV Extras - NFL Games';
-
     Parser_NFLFullHD.getEventDetails(req.params.uid, function (statusCode, result) {
         var event = {};
         event.title = result.event.title;
+        event.title = event.title.replace('Replay Full Game','');
         event.sources = [];
 
         result.event.streams.forEach(element => {
@@ -36,6 +35,17 @@ exports.nfl_game = function (req, res) {
             }
         });
 
-        res.render('events/nflgame', { title: title, game: event });
+        var playlist = "#EXTM3U\n";
+        var index = 1;
+        event.sources.forEach(element => {
+            element.links.forEach(link => {
+                var item = "#EXTINF:0," + event.title + " Part " + index + "\n" + link + "\n"
+                playlist = playlist + item
+                index = index + 1;
+            });
+        });
+
+        res.set('Content-Disposition', 'attachment; filename="nfl_game.m3u"')
+        res.send(playlist);
     });
 }
