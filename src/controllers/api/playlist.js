@@ -65,7 +65,7 @@ exports.channels_list_by_category = function (req, res) {
                     });
 
                 } catch (error) {
-                    // TODO log error
+                    console.error('Error parsing ' + element.id, error);
                 }
             });
 
