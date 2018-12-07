@@ -1,11 +1,16 @@
 const url = require('url');
 const HTTPRequest = require("../net/httprequest");
 const DomParser = require('dom-parser');
+var cache = require('memory-cache');
 
 const baseUrl = "https://www.nflfullhd.com/";
 const sourcePath = "/api/events/nflfullhd/";
 
 var parser = new DomParser();
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
 function getOptionsFromURL(url, isGet = true, isJson = false) {
     // console.log('url: ' + url.toString());
@@ -130,34 +135,47 @@ exports.getEventDetails = function (uid, callback) {
  */
 exports.getEventStream = function (uid, stream, callback) {
     var result = {};
+    var statusCode;
 
     stream == "000000" ? stream = '' : stream = stream;
 
     var url = new URL(baseUrl + uid + '/' + stream);
 
-    var response = HTTPRequest.getHTMLSync(url);
-    if (response.statusCode == 200) {
-        var pageDOM = parser.parseFromString(response.content);
-        var iframeNode = pageDOM.getElementsByTagName('iframe')[0];
-        var iframeLink = iframeNode.getAttribute('src');
-        iframeLink.startsWith('//') ? iframeLink = 'http:' + iframeLink : iframeLink = iframeLink;
-
-        var streamUrl = parseContentForStreamUrl(iframeLink);
-
-        if (streamUrl != null) {
-            result.type = streamUrl.type;
-            result.links = streamUrl.links;
-        }
-        else {
-            result.type = 'embebed';
-            result.url = iframeLink;
-        }
+    if( cache.get(url) ){
+        console.log('Found element ' + url + ' in cache');
+        result = cache.get(url);
+        statusCode = 200;
     }
-    else result = null;
+    else {
+        var response = HTTPRequest.getHTMLSync(url);
+        if (response.statusCode == 200) {
+            var pageDOM = parser.parseFromString(response.content);
+            var iframeNode = pageDOM.getElementsByTagName('iframe')[0];
+            var iframeLink = iframeNode.getAttribute('src');
+            iframeLink.startsWith('//') ? iframeLink = 'http:' + iframeLink : iframeLink = iframeLink;
+
+            var streamUrl = parseContentForStreamUrl(iframeLink);
+
+            if (streamUrl != null) {
+                result.type = streamUrl.type;
+                result.links = streamUrl.links;
+            }
+            else {
+                result.type = 'embebed';
+                result.url = iframeLink;
+            }
+            statusCode = response.statusCode;
+            
+            cache.put(url, result, (12 + getRandomInt(4)) * 60 * 60 * 1000, function(key, value){
+                console.log('Removing cache for ' + key);
+            });
+        }
+        else result = null;
+    }
 
     result = { 'stream': result };
     // console.debug("Result\n" + JSON.stringify(result));
-    callback(response.statusCode, result);
+    callback(statusCode, result);
 }
 
 function parseContentForStreamUrl(url) {

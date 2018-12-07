@@ -1,6 +1,7 @@
 const url = require('url');
 const HTTPRequest = require("../net/httprequest");
 const DomParser = require('dom-parser');
+var cache = require('memory-cache');
 
 const baseUrl = "http://arenavision.in";
 const guidePath = "/guide";
@@ -8,20 +9,34 @@ const extraHeaders = {'cookie':'beget=begetok'};
 
 var parser = new DomParser();
 
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
 function GetAceStreamLink( link ){
     var result = '';
 
-    var _response = HTTPRequest.getHTMLSync(new URL( link ), HTTPRequest.getHeaders( extraHeaders ) );
-    var pageDOM = parser.parseFromString(_response.content);
+    if (cache.get(link) != null) {
+        console.log('Found element ' + link + ' in cache');
+        result = cache.get(link);
+    }
+    else {
+        var _response = HTTPRequest.getHTMLSync(new URL(link), HTTPRequest.getHeaders(extraHeaders));
+        var pageDOM = parser.parseFromString(_response.content);
 
-    if (_response.statusCode == 200) {
-        var holderElement = pageDOM.getElementsByClassName('auto-style1');
-        holderElement.forEach( element => {
-            var item = element.getElementsByTagName('a')[0];
-            if(item != null) {
-                result = item.getAttribute('href');
-            }
-        });
+        if (_response.statusCode == 200) {
+            var holderElement = pageDOM.getElementsByClassName('auto-style1');
+            holderElement.forEach(element => {
+                var item = element.getElementsByTagName('a')[0];
+                if (item != null) {
+                    result = item.getAttribute('href');
+                    cache.put(link, result, (12 + getRandomInt(4)) * 60 * 60 * 1000, function(key, value){
+                        console.log('Removing cache for ' + key);
+                    });
+                }
+            });
+        }
     }
 
     return result;
