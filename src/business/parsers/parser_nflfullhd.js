@@ -65,7 +65,10 @@ exports.getEvents = function (callback) {
  */
 exports.getEventDetails = function (uid, callback) {
     var result = {};
-    var url = new URL(baseUrl + uid);
+    var _url = baseUrl + uid;
+    _url.endsWith('/') ? _url = _url : _url = _url + '/';
+
+    var url = new URL(_url);
 
     var response = HTTPRequest.getHTMLSync(url);
     if (response.statusCode == 200) {
@@ -139,7 +142,11 @@ exports.getEventStream = function (uid, stream, callback) {
 
     stream == "000000" ? stream = '' : stream = stream;
 
-    var url = new URL(baseUrl + uid + '/' + stream);
+    // var _url = baseUrl + uid + '/' + stream; # Site changed on 17/12/2018 and no longer requires the gameid on the URL
+    var _url = baseUrl + stream;
+    _url.endsWith('/') ? _url = _url : _url = _url + '/';
+
+    var url = new URL(_url);
 
     if( cache.get(url) ){
         console.log('Found element ' + url + ' in cache');
