@@ -113,12 +113,6 @@ exports.getEventDetails = function (uid, callback) {
                     servers.push(stream);
                 }
             }
-            if (servers.length == 0) {
-                stream = {};
-                stream.name = "Game";
-                stream.links = [{ "id": "000000", "self": result.self + "/000000" }];
-                servers.push(stream);
-            }
         });
 
         result.streams = servers;
