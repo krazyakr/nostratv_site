@@ -11,3 +11,5 @@ RUN cd /tmp/ && \
     cd /usr/app
 
 RUN npm install
+
+CMD ["npm", "start"]
