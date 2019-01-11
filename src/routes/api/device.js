@@ -12,4 +12,22 @@ router.get('/', function(req, res, next) {
     res.json({"Error":"Not Implemented"});
   });
 
+// Default File
+router.get('/file/:FileID', function(req, res, next) {
+    res.statusCode = 501;
+    res.json({"Error":"Not Implemented"});
+  });
+
+// Get Device commands
+router.get('/:DeviceID/commands', function(req, res, next) {
+    res.statusCode = 501;
+    res.json({"Error":"Not Implemented"});
+  });
+
+// Get Device file
+router.get('/:DeviceID/file/:FileID', function(req, res, next) {
+    res.statusCode = 501;
+    res.json({"Error":"Not Implemented"});
+  });
+
 module.exports = router;
