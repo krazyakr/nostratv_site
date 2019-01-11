@@ -21,6 +21,7 @@ var indexRouter = require('./routes/index');
 var eventsRouter = require('./routes/api/events');
 var iptvRouter = require('./routes/api/iptv');
 var playlistRouter = require('./routes/api/playlist');
+var deviceRouter = require('./routes/api/device');
 
 var viewsEventsRouter = require('./routes/views/events');
 
@@ -30,6 +31,8 @@ app.use('/events', viewsEventsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/iptv', iptvRouter);
 app.use('/api/playlist', playlistRouter);
+
+app.use('/api/device', deviceRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
