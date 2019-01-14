@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // Required controller modules
-// var events_controller = require('../../controllers/views/events');
+// var controller = require('../../controllers/views/events');
 
 // Routes
 
@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
     res.json({"Error":"Not Implemented"});
   });
 
-// Default File
+// Get Generic File
 router.get('/file/:FileID', function(req, res, next) {
     res.statusCode = 501;
     res.json({"Error":"Not Implemented"});
