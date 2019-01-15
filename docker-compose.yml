@@ -8,3 +8,8 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+    volumes:
+      - ./shared_filesystem/:/usr/local/nostratv_site/
+    environment:
+      - PGID=1000
+      - PUID=1000

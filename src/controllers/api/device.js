@@ -1,42 +1,41 @@
-// const basePath = '/usr/local/nostratv_site/';
+const basePath = '/usr/local/nostratv_site/';
 
-// function getGenericFile(fileID){
-//     var fs = require('fs'),
-//     path = require('path'),    
-//     filePath = path.join(basePath, 'files.json');
+function readFile(filePath) {
+    const fs = require('fs');
 
-//     result = {
-//         "name": null,
-//         "content": null
-//     };
+    let rawdata = fs.readFileSync(basePath + filePath, 'utf8');
+    let file = rawdata.toString();
+    // console.log(file);
 
-//     files = null;
+    return file
+}
 
-//     fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
-//         if (!err) {
-//             console.log('received data: ' + data);
-//             files = data;
-//         } else {
-//             console.log(err);
-//         }
-//     });
+// GET /api/device/file/:fileID/ - get a generic device file
+exports.getGenericFile = function (req, res) {
+    statusCode = 404;
+    errorMsg = "File not found";
+    file = null;
+    fileName = null;
 
-//     console.log ("files:  " + files);
+    files = JSON.parse(readFile("files.json"));
 
-//     return result;
-// }
+    if (files != null) {
+        files.forEach(element => {
+            if (element.id == req.params.fileID) {
+                statusCode = 200;
+                file = readFile(element.path);
+                fileName = element.name;
+            }
+        });
+    }
 
-// GET /api/device/:fileID/ - get a generic device file
-exports.generic_file = function (req, res) {
-    console.log("started");
-    var file = { "id": req.params.fileID, "name": "install.sh", "content": "#!/bin/bash\r\necho 'This is the NOStraTV client installation script.'" };
-    statusCode = 200;
-
-    // console.log("before func");
-    // _file = getGenericFile(req.params.fileID);   
-    // console.log("after func");
-
-    res.statusCode = statusCode;
-    res.set('Content-Disposition', 'attachment; filename="' + file.name + '"')
-    res.send(file.content);
+    if (statusCode == 200) {
+        res.statusCode = statusCode;
+        res.set('Content-Disposition', 'attachment; filename="' + fileName + '"')
+        res.send(file);
+    }
+    else {
+        res.statusCode = statusCode;
+        res.json({"Error":errorMsg});
+    }
 };

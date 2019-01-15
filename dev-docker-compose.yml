@@ -4,7 +4,11 @@ services:
     build: .
     command: npm start
     volumes:
-      - ./src/:/usr/app/
-      - /usr/app/node_modules
+      - ./src/:/usr/app/nostratv_site/
+      - /usr/app/nostratv_site/node_modules
+      - ./shared_filesystem/:/usr/local/nostratv_site/
     ports:
       - "3000:3000"
+    environment:
+      - PGID=1000
+      - PUID=1000
