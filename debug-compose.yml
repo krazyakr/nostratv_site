@@ -7,8 +7,11 @@ services:
       - "--inspect-brk=0.0.0.0"
       - "."
     volumes:
-      - ./src/:/usr/app/
-      - /usr/app/node_modules
+      - ./src/:/usr/app/nostratv_site/
+      - /usr/app/nostratv_site/node_modules
     ports:
       - "3000:3000"
       - "9229:9229"
+    environment:
+      - PGID=1000
+      - PUID=1000
