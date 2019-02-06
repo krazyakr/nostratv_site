@@ -102,3 +102,35 @@ exports.getHTMLSync = function( url, myHeaders = {} ) {
     // console.log(res.getBody('utf8'));
     return { 'statusCode': res.statusCode, 'content': res.getBody('utf8') };
 };
+
+/**
+ * postJSON:  REST POST request returning the response
+ * @param url: URL object
+ * @param json: JSON object
+ * @return: returns the response
+ */
+exports.postJSON = function( url, json, myHeaders = {} ) {
+    console.debug('request: ' + url.toString());
+    var res = request('POST', url.toString(), {
+        headers: myHeaders,
+        json: json
+    });
+    // console.log(res.getBody('utf8'));
+    return { 'statusCode': res.statusCode, 'content': res.getBody('utf8') };
+};
+
+/**
+ * postJSON:  REST POST request returning the response
+ * @param url: URL object
+ * @param data: data for POST Body
+ * @return: returns the response
+ */
+exports.postData = function( url, data, myHeaders = {} ) {
+    console.debug('request: ' + url.toString());
+    var res = request('POST', url.toString(), {
+        headers: myHeaders,
+        body: data
+    });
+    // console.log(res.getBody('utf8'));
+    return { 'statusCode': res.statusCode, 'content': res.getBody('utf8') };
+};
