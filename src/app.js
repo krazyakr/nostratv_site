@@ -2,6 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var myParser = require("body-parser");
 var logger = require('morgan');
 
 var app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(myParser.urlencoded({extended : true}));
 
 // routes
 var indexRouter = require('./routes/index');
@@ -22,6 +24,7 @@ var eventsRouter = require('./routes/api/events');
 var iptvRouter = require('./routes/api/iptv');
 var playlistRouter = require('./routes/api/playlist');
 var deviceRouter = require('./routes/api/device');
+var vodRouter = require('./routes/api/vod');
 
 var viewsEventsRouter = require('./routes/views/events');
 
@@ -31,6 +34,7 @@ app.use('/events', viewsEventsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/iptv', iptvRouter);
 app.use('/api/playlist', playlistRouter);
+app.use('/api/vod', vodRouter);
 
 app.use('/api/device', deviceRouter);
 
