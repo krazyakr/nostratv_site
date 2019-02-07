@@ -29,7 +29,7 @@ exports.getMovies = function (req, res) {
 
     if (statusCode == 200) {
         res.statusCode = statusCode;
-        res.json({});
+        res.json(data);
     }
     else {
         res.statusCode = statusCode;

@@ -1,5 +1,6 @@
 const url = require('url');
 const HTTPRequest = require("../net/httprequest");
+const Mapper = require("./vodMapper");
 
 const API_BASE_URL = "http://mpapi.ml/apinew/";
 var headers = {
@@ -57,7 +58,28 @@ exports.getMovies = function(token) {
         new URL(API_BASE_URL + 'filmes.php'),
         _headers);
 
-    console.debug(data);
+    var response = {
+        "code": "0",
+        "message": ""
+    };
 
-    return null;
+    if (data.statusCode != 200) {
+        response.code = 5;
+        response.message = "Unknown error (" + data.statuscode + ")";
+    }
+    else {
+        var content = JSON.parse(data.content);
+
+        if (content.codigo != null && content.codigo == 204) {
+            response.code = 1;
+            response.message = "Authentication error"
+        }
+        else {
+            response = Mapper.mapMovies(content);
+            response.code = 0;
+            response.message = 'Success';
+        }
+    }
+
+    return response;
 }
