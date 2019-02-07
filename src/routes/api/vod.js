@@ -21,4 +21,7 @@ router.post('/', function (req, res, next) {
 // POST login request
 router.post('/login', controller.doLogin);
 
+// GET Get movies paginated
+router.get('/movies', controller.getMovies);
+
 module.exports = router;

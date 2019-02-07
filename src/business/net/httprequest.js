@@ -96,10 +96,12 @@ exports.getHTMLASync = function (options, onResult) {
  */
 exports.getHTMLSync = function( url, myHeaders = {} ) {
     console.debug('request: ' + url.toString());
+    // console.debug(myHeaders);
+
     var res = request('GET', url.toString(), {
         headers: myHeaders,
     });
-    // console.log(res.getBody('utf8'));
+    
     return { 'statusCode': res.statusCode, 'content': res.getBody('utf8') };
 };
 
