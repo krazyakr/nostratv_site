@@ -36,3 +36,42 @@ exports.getMovies = function (req, res) {
         res.json({ "Error": errorMsg.toString() });
     }
 }
+
+exports.getMovie = function (req, res) {
+    statusCode = 200;
+    errorMsg = "Unexpected error";
+
+    //TODO: request authentication with client key
+
+    console.debug(req.params);
+    var data = vodClient.getMovie(req.headers.token, req.query.itemId);
+
+    if (statusCode == 200) {
+        res.statusCode = statusCode;
+        res.json(data);
+    }
+    else {
+        res.statusCode = statusCode;
+        res.json({ "Error": errorMsg.toString() });
+    }
+}
+
+exports.decodeLink = function( request, response ) {
+    statusCode = 200;
+    errorMsg = "Unexpected error";
+
+    //TODO: request authentication with client key
+
+    var bodyRequest = request.body;
+    console.debug(bodyRequest);
+    var data = vodClient.decodeLink(bodyRequest.link);
+
+    if (statusCode == 200) {
+        response.statusCode = statusCode;
+        response.json(data);
+    }
+    else {
+        response.statusCode = statusCode;
+        response.json({ "Error": errorMsg.toString() });
+    }
+}

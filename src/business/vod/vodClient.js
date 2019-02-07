@@ -83,3 +83,47 @@ exports.getMovies = function(token) {
 
     return response;
 }
+
+exports.getMovie = function(token, itemId) {
+    _headers = headers;
+    _headers.Cookie = 'username=' + token;
+
+    data = HTTPRequest.getHTMLSync(
+        new URL(API_BASE_URL + 'filmes.php?action=links&idFilme=' + itemId),
+        _headers);
+
+    var response = {
+        "code": "0",
+        "message": ""
+    };
+
+    if (data.statusCode != 200) {
+        response.code = 5;
+        response.message = "Unknown error (" + data.statuscode + ")";
+    }
+    else {
+        var content = JSON.parse(data.content);
+
+        if (content.codigo != null && content.codigo == 204) {
+            response.code = 1;
+            response.message = "Authentication error"
+        }
+        else {
+            response = Mapper.mapMovie(content);
+            response.code = 0;
+            response.message = 'Success';
+        }
+    }
+
+    return response;
+}
+
+exports.decodeLink = function(link) {
+    var result = "";
+    var headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0'};
+
+    var html = HTTPRequest.getHTMLSync(link, headers);
+    console.debug(html);
+    
+    return result;
+}

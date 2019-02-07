@@ -24,4 +24,10 @@ router.post('/login', controller.doLogin);
 // GET Get movies paginated
 router.get('/movies', controller.getMovies);
 
+// GET Get a movie data
+router.get('/movie', controller.getMovie);
+
+// GET Decode the link into the stream link
+router.post('/decode', controller.decodeLink);
+
 module.exports = router;
