@@ -55,14 +55,13 @@ exports.getMovie = function (req, res) {
     }
 }
 
-exports.decodeLink = function( request, response ) {
+exports.getVideo = function( request, response ) {
     statusCode = 200;
     errorMsg = "Unexpected error";
 
     //TODO: request authentication with client key
 
-    var bodyRequest = request.body;
-    var data = vodClient.decodeLink(bodyRequest.link);
+    var data = vodClient.getVideo(request.headers.token, request.query.itemId, request.query.type);
 
     if (statusCode == 200) {
         response.statusCode = statusCode;

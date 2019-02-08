@@ -27,7 +27,7 @@ router.get('/movies', controller.getMovies);
 // GET Get a movie data
 router.get('/movie', controller.getMovie);
 
-// GET Decode the link into the stream link
-router.post('/decode', controller.decodeLink);
+// GET Get the video stream of a movie
+router.get('/video', controller.getVideo);
 
 module.exports = router;

@@ -1,8 +1,11 @@
 const url = require('url');
 const HTTPRequest = require("../net/httprequest");
+const streamangoHandler = require("./sources/streamango");
 const Mapper = require("./vodMapper");
 
 const API_BASE_URL = "http://mpapi.ml/apinew/";
+const API_SUBS_BASE_URL = "http://mpapi.ml/"
+
 var headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0',
     'Accept-Charset': 'utf-8;q=0.7,*;q=0.7',
@@ -110,12 +113,7 @@ exports.getMovie = function (token, itemId) {
         }
         else {
             response = Mapper.mapMovie(content);
-
-            var _links = [];
-            response.links.forEach(element => {
-                if (element.link.indexOf('streamango') > 0) _links.push(element);
-            });
-            response.links = _links;
+            response.links = null;
 
             response.code = 0;
             response.message = 'Success';
@@ -125,88 +123,93 @@ exports.getMovie = function (token, itemId) {
     return response;
 }
 
-exports.decodeLink = function (link) {
-    if (link.indexOf('streamango') > 0) return decodeStreamango(link);
-
-    return {
-        "code": "1",
-        "message": "Source not supported"
+exports.getVideo = function (token, itemId, type) {
+    var response = {
+        "code": "4",
+        "message": "Type not supported"
     };
+
+    switch(type){
+        case 'movie':
+            response = getMovieStream(token, itemId);
+    }
+
+    return response;
 }
 
-function decodeStreamango(link) {
-    var result = "";
-    var headers = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0' };
+function getMovieStream(token, itemId){
+    _headers = headers;
+    _headers.Cookie = 'username=' + token;
 
-    var html = HTTPRequest.getHTMLSync(link, headers).content;
-    if (html.indexOf('{type:"video/mp4",src:') > 0) {
-        start = html.indexOf('(', html.indexOf('{type:"video/mp4",src:')) + 2;
-        end = html.indexOf("'", start + 1);
-        var encoded = html.substring(start, end);
+    data = HTTPRequest.getHTMLSync(
+        new URL(API_BASE_URL + 'filmes.php?action=links&idFilme=' + itemId),
+        _headers);
 
-        start = html.indexOf(',', end) + 1;
-        end = html.indexOf(")", start);
-        var code = html.substring(start, end);
+    var response = {
+        "code": "0",
+        "message": ""
+    };
 
-        var source = 'http:' + decodeHelper(encoded, code);
-        result = { 'stream': source, 'subtitle':'' };
+    if (data.statusCode != 200) {
+        response.code = 5;
+        response.message = "Unknown error (" + data.statuscode + ")";
     }
+    else {
+        var content = JSON.parse(data.content);
 
-    return result;
-}
+        if (content.codigo != null && content.codigo == 204) {
+            response.code = 1;
+            response.message = "Authentication error"
+        }
+        else {
+            movie = Mapper.mapMovie(content);
 
-function myRange(start, stop, step) {
-    if (typeof stop == 'undefined') {
-        // one param defined
-        stop = start;
-        start = 0;
-    }
-
-    if (typeof step == 'undefined') {
-        step = 1;
-    }
-
-    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-        return [];
-    }
-
-    var result = [];
-    for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
-        result.push(i);
-    }
-
-    return result;
-}
-
-function decodeHelper(encoded, code) {
-    _0x59b81a = ""
-    k = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-    k = k.split("").reverse().join("");
-
-    count = 0;
-    var range = myRange(0, encoded.length - 1);
-    for (index in range) {
-        while (count <= encoded.length - 1) {
-            _0x4a2f3a = k.indexOf(encoded[count]);
-            count += 1;
-            _0x29d5bf = k.indexOf(encoded[count]);
-            count += 1;
-            _0x3b6833 = k.indexOf(encoded[count]);
-            count += 1;
-            _0x426d70 = k.indexOf(encoded[count]);
-            count += 1;
-
-            _0x2e4782 = ((_0x4a2f3a << 2) | (_0x29d5bf >> 4));
-            _0x2c0540 = (((_0x29d5bf & 15) << 4) | (_0x3b6833 >> 2));
-            _0x5a46ef = ((_0x3b6833 & 3) << 6) | _0x426d70;
-            _0x2e4782 = _0x2e4782 ^ code;
-
-            _0x59b81a = String(_0x59b81a) + String.fromCharCode(_0x2e4782);
-
-            if (_0x3b6833 != 64) _0x59b81a = String(_0x59b81a) + String.fromCharCode(_0x2c0540);
-            if (_0x3b6833 != 64) _0x59b81a = String(_0x59b81a) + String.fromCharCode(_0x5a46ef);
+            linkData = getStream(movie.links);
+            if(linkData == null) {
+                response.code = 2;
+                response.message = 'Supported format not found';
+            }
+            else {
+                handler = null;
+                switch(linkData.source){
+                    case 'streamango':
+                        handler = streamangoHandler;
+                        break;
+                    default:
+                        handler = streamangoHandler;
+                }
+                stream = handler.decode(linkData.url);
+                response.video = stream.stream;
+                response.subtitle = (stream.subtitle != null) ? stream.subtitle : getSubtitle(movie);
+                response.code = 0;
+                response.message = 'Success';
+            }
         }
     }
 
-    return _0x59b81a
+    return response;
+}
+
+function getStream(links) {
+    var result = null;
+
+    links.forEach(element => {
+        if (element.link.indexOf('streamango') > 0) result = { 'source': 'streamango', 'url': element.link };
+    });
+
+    return result;
+}
+
+function getSubtitle(movie){
+    var result = null;
+
+    if( movie.subtitle.indexOf('://')>0 || movie.subtitle == '' ){
+        result = API_SUBS_BASE_URL + "subs/" + movie.IMDB;
+    }
+    else if(movie.subtitle != '' && movie.subtitle != 'semLegenda') {
+        movie.subtitle = ( movie.subtitle.indexOf('.srt') > 0 ) ? movie.subtitle : movie.subtitle + '.srt';
+        result = API_SUBS_BASE_URL + "subs/" + movie.subtitle;
+    }
+
+    return result;
 }
