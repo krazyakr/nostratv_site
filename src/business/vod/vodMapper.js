@@ -6,7 +6,6 @@ exports.mapMovies = function(originData) {
 
     var list = [];
     originData.data.forEach(element => {
-        console.debug(element);
         var listItem = {};
         listItem.itemId = element.id_video;
         listItem.title = element.nome_ingles;
@@ -32,12 +31,13 @@ exports.mapMovie = function(originData) {
     var result = {};
 
     originData = originData[0];
-    console.debug(originData);
+
     result.itemId = originData.id_video;
     result.title = originData.nome_ingles;
     result.titlePT = originData.nome_video;
     result.year = originData.ano;
     result.subtitle = originData.legenda;
+    result.IMDB = originData.IMBD;
     result.links = [];
 
     if(originData.URL != '') result.links.push({'link':originData.URL});

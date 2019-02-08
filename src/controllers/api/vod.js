@@ -43,7 +43,6 @@ exports.getMovie = function (req, res) {
 
     //TODO: request authentication with client key
 
-    console.debug(req.params);
     var data = vodClient.getMovie(req.headers.token, req.query.itemId);
 
     if (statusCode == 200) {
@@ -63,7 +62,6 @@ exports.decodeLink = function( request, response ) {
     //TODO: request authentication with client key
 
     var bodyRequest = request.body;
-    console.debug(bodyRequest);
     var data = vodClient.decodeLink(bodyRequest.link);
 
     if (statusCode == 200) {
