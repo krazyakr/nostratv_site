@@ -21,4 +21,7 @@ router.get('/:deviceID/:secret/commands/:version', controller.getDeviceCommands)
 // Get Device file
 router.get('/:deviceID/:secret/file/:fileID', controller.getDeviceFile);
 
+// Get Device IPTV
+router.get('/:deviceID/:secret/iptv', controller.getDeviceIPTV);
+
 module.exports = router;

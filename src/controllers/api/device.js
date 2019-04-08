@@ -1,4 +1,5 @@
 const basePath = '/usr/local/nostratv_site/';
+const HTTPRequest = require("../../business/net/httprequest");
 
 function readFile(filePath) {
     const fs = require('fs');
@@ -109,6 +110,54 @@ exports.getDeviceFile = function (req, res) {
                         fileName = element.name;
                     }
                 });
+            }
+        }
+    }
+
+    if (statusCode == 200) {
+        res.statusCode = statusCode;
+        res.set('Content-Disposition', 'attachment; filename="' + fileName + '"')
+        res.send(file);
+    }
+    else {
+        res.statusCode = statusCode;
+        res.json({ "Error": errorMsg.toString() });
+    }
+};
+
+// GET /:deviceID/:secret/iptv - get IPTV playlist for device
+exports.getDeviceIPTV = function (req, res) {
+    statusCode = 404;
+    errorMsg = "Not found";
+    file = null;
+    fileName = null;
+
+    // console.log("User: " + req.params.deviceID);
+    // console.log("Secret: " + req.params.secret);
+    // console.log("Version: " + req.params.version);
+
+    settings = JSON.parse(readFile(req.params.deviceID + "/settings.json"));
+    if(settings != null ){
+        if( settings.secret != req.params.secret ){
+            console.error( "User " + req.params.deviceID + ": " + settings.secret + " != " + req.params.secret );
+            statusCode = 401;
+            errorMsg = "Unauthorized"
+        }
+        else {
+            try {
+                itpv_source = readFile(req.params.deviceID + "/iptv.source");
+
+                if (itpv_source != null) {
+                    var _response = HTTPRequest.getHTMLSync(new URL(itpv_source));
+                    playlist = _response.content;
+                    statusCode = 200;
+                    file = playlist;
+                    fileName = "iptv_channels.m3u";
+                }
+            } catch (error) {
+                console.error(error);
+                statusCode = 404;
+                errorMsg = "Not found";
             }
         }
     }
