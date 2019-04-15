@@ -17,22 +17,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
-var indexRouter = require('./routes/index');
-var eventsRouter = require('./routes/api/events');
-var playlistRouter = require('./routes/api/playlist');
-var deviceRouter = require('./routes/api/device');
-
-var viewsEventsRouter = require('./routes/views/events');
-var viewsDevicesRouter = require('./routes/views/DevicesRouter');
-
-app.use('/', indexRouter);
-app.use('/events', viewsEventsRouter);
-app.use('/devices', viewsDevicesRouter);
-
-app.use('/api/events', eventsRouter);
-app.use('/api/playlist', playlistRouter);
-
-app.use('/api/device', deviceRouter);
+app.use(require('./routes'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

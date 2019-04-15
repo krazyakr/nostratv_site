@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'NOStraTV Extras' });
-});
+// API routes
+router.use('/api', require('./api'));
+
+// Views routes
+router.use('/', require('./views'));
 
 module.exports = router;
