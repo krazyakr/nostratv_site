@@ -23,9 +23,11 @@ var playlistRouter = require('./routes/api/playlist');
 var deviceRouter = require('./routes/api/device');
 
 var viewsEventsRouter = require('./routes/views/events');
+var viewsDevicesRouter = require('./routes/views/DevicesRouter');
 
 app.use('/', indexRouter);
 app.use('/events', viewsEventsRouter);
+app.use('/devices', viewsDevicesRouter);
 
 app.use('/api/events', eventsRouter);
 app.use('/api/playlist', playlistRouter);

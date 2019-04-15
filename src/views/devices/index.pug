@@ -1,0 +1,13 @@
+extends ../layout
+
+block content
+  h1= title
+  p Devices on the service
+  p
+  ul
+    each item in list
+      li 
+        a.user_link(href='/devices/' + item) #{item}
+
+  br
+  a.back(href='/') Back

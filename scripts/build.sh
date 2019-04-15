@@ -1,3 +1,3 @@
 #!/bin/sh
 echo "Building NostraTV Site Docker image"
-docker-compose build --force-rm --no-cache --pull
+docker build -t krazyakr/nostratv:1.0.0 -t krazyakr/nostratv:latest .

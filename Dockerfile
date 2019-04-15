@@ -11,5 +11,6 @@ RUN cd /tmp/ && \
     cd /usr/app/nostratv_site
 
 RUN npm install
+ENV PORT=80
 
 CMD ["npm", "start"]
