@@ -63,6 +63,9 @@ typings/
 # next.js build output
 .next
 
+# Visual Studio Code environment
+.vscode/
+
 # Shared filesystem
 shared_filesystem/
 shared_filesystem
