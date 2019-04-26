@@ -1,0 +1,11 @@
+<% layout('../layout') -%>
+
+<p>Devices on the service</p>
+<p>
+    <ul>
+        <% list.forEach(function(user){ %>
+            <li><a href='/devices/<%=user%>'><%=user%></a></li>
+        <% }); %>
+    </ul>
+</p>
+<p><a href="/">Back</a></p>

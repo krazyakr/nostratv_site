@@ -1,0 +1,25 @@
+<% layout('../layout') -%>
+
+<h2><%=device.name%></h2>
+<form method="POST" action='/devices/<%=device.DeviceID%>/save'>
+    ID:&nbsp;<%=device.DeviceID%><br>
+    Name:&nbsp;<%=device.DeviceID%><br>
+    IPTV:&nbsp;<input type="text" name="IPTV" value="<%=device.IPTV%>"><br>
+    <input type="submit" value="Save">
+</form>
+<p><a href="/devices">Back</a></p>
+
+<!-- h2= device.Name
+  form(method="POST" action='/devices/'+device.DeviceID+'/save')
+    div.form-group
+      div.form-entry
+        label(for='ID)') ID: #{device.DeviceID}
+      br
+      label(for='Name') Name: #{device.Name}
+      br
+      label(for="IPTV") IPTV: 
+      input(type="text", name='IPTV' value=device.IPTV)
+    br
+    button(type="submit") Save
+  br
+  a.back(href='/devices') Back -->

@@ -1,0 +1,11 @@
+<% layout('../layout') -%>
+
+<p>Available NFL Games</p>
+<p>
+    <ul>
+        <% list.events.forEach(function(event){ %>
+            <li><a href='nfl/<%=event.id%>'><%=event.title%></a></li>
+        <% }); %>
+    </ul>
+</p>
+<p><a href="/">Back</a></p>
