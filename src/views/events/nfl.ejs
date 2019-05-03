@@ -1,11 +1,54 @@
 <% layout('../layout') -%>
 
-<p>Available NFL Games</p>
-<p>
-    <ul>
-        <% list.events.forEach(function(event){ %>
-            <li><a href='nfl/<%=event.id%>'><%=event.title%></a></li>
-        <% }); %>
-    </ul>
-</p>
-<p><a href="/">Back</a></p>
+<!-- ***** Breadcumb Area Start ***** -->
+<div class="mosh-breadcumb-area" style="background-image: url(/img/core-img/breadcumb.png);">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12">
+                <div class="bradcumbContent">
+                    <h2>Sports Events</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Sports Events</li>
+                            <li class="breadcrumb-item active" aria-current="page">NFL Games</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Breadcumb Area End ***** -->
+
+<!-- ***** Data Area Start ***** -->
+<section class="contact-area section_padding_100">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <!-- Data Table Area -->
+            <div class="col-12 col-md-8">
+                <div class="row">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% i=1; 
+                            list.events.forEach(function(event){ %>
+                            <tr onclick="location='nfl/<%=event.id%>';">
+                                <th scope="row"><%=i%></th>
+                                <td><%=event.title%></td>
+                            </tr>
+                            <% i=i+1; 
+                            }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Data Area End ***** -->

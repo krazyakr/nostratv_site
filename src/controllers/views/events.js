@@ -1,7 +1,7 @@
 var Parser_NFLFullHD = require("../../business/parsers/parser_nflfullhd");
 
 exports.nfl = function (req, res) {
-    var title = 'NOStraTV Extras - NFL Games';
+    var title = 'NOStraTV - NFL Games';
 
     Parser_NFLFullHD.getEvents(function (statusCode, result) {
         res.render('events/nfl', { title: title, list: result });

@@ -7,12 +7,12 @@ router.use('/devices', require('./DevicesRouter'));
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', { title: 'NOStraTV Extras' });
+    res.render('index', { title: 'NOStraTV' });
 });
 
 /* GET Login page. */
 router.get('/login', function (req, res, next) {
-    res.render('login', { title: 'NOStraTV Extras' });
+    res.render('login', { title: 'NOStraTV' });
 });
 
 router.get('/logout', function(req, res){

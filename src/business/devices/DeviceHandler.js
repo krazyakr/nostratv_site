@@ -1,4 +1,5 @@
-const basePath = '/usr/local/nostratv_site/';
+// const basePath = '/usr/local/nostratv_site/';
+var basePath = process.env.FS_PATH + '/devices/';
 
 function readFile(filePath) {
   const fs = require('fs');

@@ -3,7 +3,7 @@ var DeviceHandler = require('../../business/devices/DeviceHandler');
 exports.Devices = function(request, response){
     var devicesList = DeviceHandler.GetDevices();
 
-    response.render('devices/index', { title: 'NOStraTV Extras - Devices', list: devicesList });
+    response.render('devices/index', { title: 'NOStraTV - Devices', list: devicesList });
 }
 
 exports.Device = function(request, response){
@@ -11,7 +11,7 @@ exports.Device = function(request, response){
 
     console.log('Device: ' + JSON.stringify(device));
 
-    response.render('devices/device', { title: 'NOStraTV Extras - Device', device: device });
+    response.render('devices/device', { title: 'NOStraTV - Device', device: device });
 }
 
 exports.SaveDevice = function(request, response){
@@ -26,5 +26,5 @@ exports.SaveDevice = function(request, response){
         device = updatedDevice;
     }
 
-    response.render('devices/device', { title: 'NOStraTV Extras - Device', device: device });
+    response.render('devices/device', { title: 'NOStraTV - Device', device: device });
 }
