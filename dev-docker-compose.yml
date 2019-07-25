@@ -2,7 +2,9 @@ version: '2'
 services:
   web:
     build: .
-    command: npm start
+    command: >
+      sh -c "npm install
+             npm start"
     volumes:
       - ./src/:/usr/app/nostratv_site/
       - ./shared_filesystem/:/usr/local/nostratv_site/
