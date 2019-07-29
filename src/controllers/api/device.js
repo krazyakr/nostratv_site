@@ -5,8 +5,8 @@ const HTTPRequest = require("../../business/net/httprequest");
 function readFile(filePath) {
     const fs = require('fs');
 
-    let rawdata = fs.readFileSync(basePath + filePath, 'utf8');
-    let file = rawdata.toString();
+    let rawdata = fs.readFileSync(basePath + filePath);
+    let file = rawdata;
     // console.log(file);
 
     return file
