@@ -21,7 +21,7 @@ function getRandomInt(max) {
 function getIptvPlaylist(sourceAddress, callback) {
     var hash = require('crypto').createHash('md5').update(sourceAddress).digest('hex');
     console.debug(hash); // 9b74c9897bac770ffc029102a200c5de
-    
+
     const cache_key = `iptv_${hash}`;
     if (cache.get(cache_key)) {
         console.log('Found element ' + cache_key + ' in cache');
@@ -32,22 +32,30 @@ function getIptvPlaylist(sourceAddress, callback) {
             statusCode: statusCode,
             content: content
         });
+    } else {
+        fetchAndCache(sourceAddress, cache_key, callback);
     }
-    else {
-        HTTPRequest.getHTMLASync(sourceAddress, function (statusCode, content) {
-            // put result on cache
-            cache.put(cache_key, content, (12 + getRandomInt(4)) * 60 * 60 * 1000, function (key, value) {
-                console.log('Removing cache for ' + key);
-            });
+}
 
-            callback(null, {
-                statusCode: statusCode,
-                content: content
+function fetchAndCache(sourceAddress, cache_key, callback) {
+    HTTPRequest.getHTMLASync(sourceAddress, function (statusCode, content) {
+        // Put result on cache with expiration
+        const cacheDuration = (12 + getRandomInt(4)) * 60 * 60 * 1000;
+        cache.put(cache_key, content, cacheDuration, function (key, value) {
+            console.log('Refreshing cache for ' + key);
+            // Refresh the cache after expiration
+            fetchAndCache(sourceAddress, cache_key, function() {
+                console.log('Cache refreshed for ' + key);
             });
-        }, function (error) {
-            callback(error, null);
         });
-    }
+
+        callback(null, {
+            statusCode: statusCode,
+            content: content
+        });
+    }, function (error) {
+        callback(error, null);
+    });
 }
 
 function parsePlaylist(playlist) {
