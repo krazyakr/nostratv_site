@@ -11,7 +11,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dom-parser": "^0.1.5",
-    "ejs": "^2.6.1",
+    "ejs": "^3.1.10",
     "ejs-locals": "^1.0.2",
     "express": "~4.21.0",
     "express-session": "^1.16.1",
@@ -24,7 +24,7 @@
     "sync-request": "^6.0.0"
   },
   "devDependencies": {
-    "mocha": "^5.1.1",
+    "mocha": "^10.2.0",
     "supertest": "^3.0.0"
   }
 }
