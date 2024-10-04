@@ -3,16 +3,12 @@ FROM node:alpine
 WORKDIR /usr/app/nostratv_site
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+    apk add --no-cache bash openssh netcat-openbsd
 
-RUN cd /tmp/ && \
-    git clone https://github.com/krazyakr/nostratv_site.git && \
-    cp -r /tmp/nostratv_site/src/* /usr/app/nostratv_site/ && \
-    mkdir /usr/local/nostratv_site/ && \
-    cd /usr/app/nostratv_site
+ADD src /usr/app/nostratv_site/
+COPY .config/production.env /usr/app/nostratv_site/.env
+RUN cd /usr/app/nostratv_site && npm install
 
-RUN npm install
-ENV PORT=80
-ENV FS_PATH=/usr/local/nostratv_site/
+RUN mkdir /usr/local/nostratv_site/
 
 CMD ["npm", "start"]

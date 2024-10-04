@@ -1,4 +1,7 @@
 var Parser_NFLFullHD = require("../../business/parsers/parser_nflfullhd");
+var Parser_ArenaVision = require('../../business/parsers/parser_arenavision');
+var cache = require('memory-cache');
+var acestreamHost = process.env.ACESTREAM_HOST;
 
 exports.nfl = function (req, res) {
     var title = 'NOStraTV - NFL Games';
@@ -23,7 +26,7 @@ exports.nfl_game = function (req, res) {
                 Parser_NFLFullHD.getEventStream(result.event.id, link.id, function (statusCode2, result2) {
                     if (result2.stream.type == 'stream') {
                         result2.stream.links.forEach(link => {
-                            if (link.name == 'hd') {
+                            if (link.name == 'sd') {
                                 source.links = source.links.concat(link.url);
                             }
                         });
@@ -47,5 +50,21 @@ exports.nfl_game = function (req, res) {
 
         res.set('Content-Disposition', 'attachment; filename="nfl_game.m3u"')
         res.send(playlist);
+    });
+}
+
+exports.livetvChannels = function(request, response){
+    var title = 'NOStraTV - Live TV';
+    
+    Parser_ArenaVision.GetChannels(function (statusCode, result) {
+        list = [];
+        for(var streamId in result.channels)
+        {
+            element = result.channels[streamId];
+            element.link = acestreamHost.replace("{channel_id}",element.streamID);
+            list.push(element);
+        }
+        
+        response.render('events/livetv', { title: title, list: list });
     });
 }

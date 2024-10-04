@@ -3,7 +3,7 @@ const HTTPRequest = require("../net/httprequest");
 const DomParser = require('dom-parser');
 var cache = require('memory-cache');
 
-const baseUrl = "http://arenavision.in";
+const baseUrl = "https://arenavision.in";
 const guidePath = "/guide";
 const extraHeaders = {'cookie':'beget=begetok'};
 
@@ -28,9 +28,9 @@ function GetAceStreamLink( link ){
         if (_response.statusCode == 200) {
             var holderElement = pageDOM.getElementsByClassName('auto-style1');
             holderElement.forEach(element => {
-                var item = element.getElementsByTagName('a')[0];
+                var item = element.getElementsByTagName('a')[1];
                 if (item != null) {
-                    result = item.getAttribute('href');
+                    result = item.getAttribute('href').replace("acestream://","");
                     cache.put(link, result, (12 + getRandomInt(4)) * 60 * 60 * 1000, function(key, value){
                         console.log('Removing cache for ' + key);
                     });
@@ -45,7 +45,7 @@ function GetAceStreamLink( link ){
 exports.GetChannels = function( callback ){
     var channels = [];
 
-    var _response = HTTPRequest.getHTMLSync(new URL( baseUrl ), HTTPRequest.getHeaders( extraHeaders ) );
+    var _response = HTTPRequest.getHTMLSync(new URL( baseUrl ), HTTPRequest.getHeaders( /*extraHeaders*/ ) );
     var pageDOM = parser.parseFromString(_response.content);
 
     if (_response.statusCode == 200) {
@@ -53,22 +53,24 @@ exports.GetChannels = function( callback ){
         channelsFromMenu.forEach(element => {
             var channelsFromExpanded = element.getElementsByClassName('leaf');
             channelsFromExpanded.forEach(innerElement => {
-
                 try {
                     var item = innerElement.firstChild;
 
                     var name = item.textContent;
                     var link = item.getAttribute('href');
 
-                    var streamLink = GetAceStreamLink(link);
+                    var streamID = GetAceStreamLink(baseUrl + link);
 
-                    var channel = {
-                        'name': name,
-                        'stream': streamLink
-                    };
-                    channels.push(channel);
+                    if(!channels[streamID])
+                    {
+                        var channel = {
+                            'name': name,
+                            'streamID': streamID
+                        };
+                        channels[streamID] = channel;
+                    }
                 } catch (error) {
-                    // console.debug(error);
+                    console.debug(error);
                 }
             })
         });

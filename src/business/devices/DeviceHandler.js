@@ -27,7 +27,7 @@ function getDirectories(path) {
 
 function getIPTVInfo(device) {
   try {
-    itpv_source = readFile(device.DeviceID + "/iptv.source");
+    itpv_source = readFile(device.DeviceID + "/iptv.source").toString();
 
     if (itpv_source != null) {
       return itpv_source;
@@ -74,4 +74,26 @@ exports.SaveDevice = function( device ){
   }
 
   return null;
+}
+
+exports.AuthenticateDevice = function (deviceID, secret, callback) {
+  var settings = JSON.parse(readFile(deviceID + "/settings.json"));
+  if (settings != null) {
+    if (settings.secret != secret) {
+      console.error("User " + deviceID + ": " + settings.secret + " != " + secret);
+      callback({
+        errorCode: 401,
+        message: "Unauthorized"
+      }, null);
+    }
+    else {
+      callback(null, this.GetDevice(deviceID));
+    }
+  }
+  else {
+    callback({
+      errorCode: 404,
+      message: "Not found"
+    }, null);
+  }
 }

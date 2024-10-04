@@ -4,6 +4,7 @@ const DomParser = require('dom-parser');
 var cache = require('memory-cache');
 
 const baseUrl = "https://www.nflfullhd.com/";
+const streamsBaseUrl = "https://fishker.com/";
 const sourcePath = "/api/events/nflfullhd/";
 
 var parser = new DomParser();
@@ -126,52 +127,53 @@ exports.getEventDetails = function (uid, callback) {
 
 /**
  * getEventStream:  get the stream url for the event and stream requested
- * @param uid: event uid
+ * @param eventID: event uid
  * @param stream: stream uid
  * @return: returns the stream url object. NULL if an error is generated
  */
-exports.getEventStream = function (uid, stream, callback) {
+exports.getEventStream = function (eventID, stream, callback) {
     var result = {};
     var statusCode;
 
-    stream == "000000" ? stream = '' : stream = stream;
+    externalUrl = getStreamExternalUrl(eventID, stream);
+    // console.log(externalUrl);
 
-    // var _url = baseUrl + uid + '/' + stream; # Site changed on 17/12/2018 and no longer requires the gameid on the URL
-    var _url = baseUrl + stream;
-    _url.endsWith('/') ? _url = _url : _url = _url + '/';
-
-    var url = new URL(_url);
-
-    if( cache.get(url) ){
-        console.log('Found element ' + url + ' in cache');
-        result = cache.get(url);
-        statusCode = 200;
+    if(!externalUrl)
+    {
+        statusCode = 404;
     }
     else {
-        var response = HTTPRequest.getHTMLSync(url);
-        if (response.statusCode == 200) {
-            var pageDOM = parser.parseFromString(response.content);
-            var iframeNode = pageDOM.getElementsByTagName('iframe')[0];
-            var iframeLink = iframeNode.getAttribute('src');
-            iframeLink.startsWith('//') ? iframeLink = 'http:' + iframeLink : iframeLink = iframeLink;
-
-            var streamUrl = parseContentForStreamUrl(iframeLink);
-
-            if (streamUrl != null) {
-                result.type = streamUrl.type;
-                result.links = streamUrl.links;
-            }
-            else {
-                result.type = 'embebed';
-                result.url = iframeLink;
-            }
-            statusCode = response.statusCode;
-            
-            cache.put(url, result, (12 + getRandomInt(4)) * 60 * 60 * 1000, function(key, value){
-                console.log('Removing cache for ' + key);
-            });
+        if( cache.get(externalUrl) ){
+            console.log('Found element ' + url + ' in cache');
+            result = cache.get(url);
+            statusCode = 200;
         }
-        else result = null;
+        else {
+            var response = HTTPRequest.getHTMLSync(externalUrl);
+            if (response.statusCode == 200) {
+                var pageDOM = parser.parseFromString(response.content);
+                var iframeNode = pageDOM.getElementsByTagName('iframe')[0];
+                var iframeLink = iframeNode.getAttribute('src');
+                iframeLink.startsWith('//') ? iframeLink = 'http:' + iframeLink : iframeLink = iframeLink;
+
+                var streamUrl = parseContentForStreamUrl(iframeLink);
+
+                if (streamUrl != null) {
+                    result.type = streamUrl.type;
+                    result.links = streamUrl.links;
+                }
+                else {
+                    result.type = 'embebed';
+                    result.url = iframeLink;
+                }
+                statusCode = response.statusCode;
+                
+                cache.put(url, result, (12 + getRandomInt(4)) * 60 * 60 * 1000, function(key, value){
+                    console.log('Removing cache for ' + key);
+                });
+            }
+            else result = null;
+        }
     }
 
     result = { 'stream': result };
@@ -179,17 +181,58 @@ exports.getEventStream = function (uid, stream, callback) {
     callback(statusCode, result);
 }
 
+function getStreamExternalUrl(eventID, stream) {
+    var result = null;
+    var _url = baseUrl + eventID;
+    _url.endsWith('/') ? _url = _url : _url = _url + '/';
+
+    var url = new URL(_url);
+    var response = HTTPRequest.getHTMLSync(url);
+    if (response.statusCode == 200) {
+        var pageDOM = parser.parseFromString(response.content);
+        var divElement = pageDOM.getElementsByClassName('entry-content entry content')[0];
+        var childnodes = divElement.childNodes;
+        childnodes.forEach(element => {
+            if (element.nodeName == 'p') {
+                var innerChilds = element.childNodes;
+                for (let index = 0; index < innerChilds.length; index++) {
+                    const innerElem = innerChilds[index];
+                    switch (innerElem.nodeName) {
+                        case 'a':
+                            var _url = new URL(innerElem.getAttribute('href'));
+                            _id = _url.pathname.replace(/\//g, '');
+                            if(_id == stream){
+                                result = _url;
+                                return _url;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+        });
+    }
+
+    return result;
+}
+
 function parseContentForStreamUrl(url) {
     var result = null;
 
     url.startsWith('//') ? url = 'http:' + url : url = url;
 
-    var response = HTTPRequest.getHTMLSync(new URL(url));
-    if (response.statusCode == 200) {
-        if (url.indexOf('ok.ru') > 0)
-            result = parseContentFromOkRu(response.content);
+    try {
+        var response = HTTPRequest.getHTMLSync(new URL(url));
+        if (response.statusCode == 200) {
+            if (url.indexOf('ok.ru') > 0)
+                result = parseContentFromOkRu(response.content);
+        }
+    } catch (error) {
+        console.error(error);
     }
-
+    
     return result;
 }
 

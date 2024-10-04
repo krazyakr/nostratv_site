@@ -10,8 +10,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page"><a href="/events/">Sports Events</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">NFL Games</li>
+                            <li class="breadcrumb-item active" aria-current="page">Sports Events</li>
                         </ol>
                     </nav>
                 </div>
@@ -28,24 +27,8 @@
             <!-- Data Table Area -->
             <div class="col-12 col-md-8">
                 <div class="row">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% i=1; 
-                            list.events.forEach(function(event){ %>
-                            <tr onclick="location='nfl/<%=event.id%>';">
-                                <th scope="row"><%=i%></th>
-                                <td><%=event.title%></td>
-                            </tr>
-                            <% i=i+1; 
-                            }); %>
-                        </tbody>
-                    </table>
+                    <div class="col"><a href="/events/nfl"><img src="/img/nostratv-img/nfl_logo.jpg"></a></div>
+                    <div class="col"><a href="/events/livetv"><img src="/img/nostratv-img/arenavision_logo.jpg"></a></div>
                 </div>
             </div>
         </div>

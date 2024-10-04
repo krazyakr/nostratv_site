@@ -11,7 +11,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/">Home</a></li>
                             <li class="breadcrumb-item active" aria-current="page"><a href="/events/">Sports Events</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">NFL Games</li>
+                            <li class="breadcrumb-item active" aria-current="page">Live TV</li>
                         </ol>
                     </nav>
                 </div>
@@ -28,19 +28,39 @@
             <!-- Data Table Area -->
             <div class="col-12 col-md-8">
                 <div class="row">
+                    <!-- <p style="text-align: right;"><a href="/api/playlist/arenavision" target="_blank"><img src="/img/portfolio-img/download.png" width="20px"></a></p> -->
+<script>
+function copyToClipboard(str) {
+    const el = document.createElement('textarea');
+    el.value = str;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+};
+</script>
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">EPG</th>
+                                <th scope="col">ID / Link</th>
+                                <th scope="col"><a href="/api/playlist/arenavision" target="_blank"><img src="/img/portfolio-img/download.png" width="20px"></a></th>
                             </tr>
                         </thead>
                         <tbody>
                             <% i=1; 
-                            list.events.forEach(function(event){ %>
-                            <tr onclick="location='nfl/<%=event.id%>';">
+                            list.forEach(function(channel){ %>
+                            <tr>
                                 <th scope="row"><%=i%></th>
-                                <td><%=event.title%></td>
+                                <td><%=channel.name%></td>
+                                <td></td>
+                                <td><%=channel.streamID%></td>
+                                <td><a href="#" onclick="copyToClipboard('<%=channel.link%>'); alert('Copied to clipboard!'); return false;"><img src="/img/portfolio-img/copy.png" width="20px"></a></td>
                             </tr>
                             <% i=i+1; 
                             }); %>

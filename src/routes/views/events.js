@@ -7,6 +7,14 @@ var events_controller = require('../../controllers/views/events');
 
 // Routes
 
+/* GET Events page. */
+router.get('/', Auth.Required, function (req, res, next) {
+    res.render('events/index', { title: 'NOStraTV' });
+});
+
+/* GET Live TV page. */
+router.get('/livetv', Auth.Required, events_controller.livetvChannels);
+
 // NFL Events page
 router.get('/nfl', Auth.Required, events_controller.nfl);
 
