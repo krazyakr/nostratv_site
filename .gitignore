@@ -69,3 +69,6 @@ typings/
 # Shared filesystem
 shared_filesystem/
 shared_filesystem
+
+.DS_Store
+id_rsa

@@ -24,4 +24,6 @@ router.get('/:deviceID/:secret/file/:fileID', controller.getDeviceFile);
 // Get Device IPTV
 router.get('/:deviceID/:secret/iptv', controller.getDeviceIPTV);
 
+router.get('/:deviceID/:secret/iptv/:group', controller.getDeviceIPTVGroup);
+
 module.exports = router;
