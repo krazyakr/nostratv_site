@@ -12,7 +12,7 @@
     "debug": "~2.6.9",
     "dom-parser": "^0.1.5",
     "dotenv": "^8.2.0",
-    "ejs": "^2.6.1",
+    "ejs": "^3.1.10",
     "ejs-locals": "^1.0.2",
     "express": "~4.16.0",
     "express-session": "^1.16.1",
