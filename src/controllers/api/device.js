@@ -21,7 +21,8 @@ function getRandomInt(max) {
 function getIptvPlaylist(sourceAddress, callback) {
     var hash = require('crypto').createHash('md5').update(sourceAddress).digest('hex');
     console.debug(hash); // 9b74c9897bac770ffc029102a200c5de
-
+    console.debug('cache keys', cache.keys());
+    
     const cache_key = `iptv_${hash}`;
     if (cache.get(cache_key)) {
         console.log('Found element ' + cache_key + ' in cache');
@@ -84,30 +85,30 @@ function parsePlaylist(playlist) {
     return output;
 }
 
-function parseGroupFromPlaylist(group, playlist) {
-    group = group.toLowerCase();
-    var output = parsePlaylist(playlist);
+// function parseGroupFromPlaylist(group, playlist) {
+//     group = group.toLowerCase();
+//     var output = parsePlaylist(playlist);
 
-    let result = [];
-    let hasElement = false;
-    var keys = Object.keys(output);
-    console.debug(keys);
+//     let result = [];
+//     let hasElement = false;
+//     var keys = Object.keys(output);
+//     console.debug(keys);
 
-    for (let index = 0; index < keys.length; index++) {
-        const element = keys[index];
-        if( element.startsWith(group) )
-        {
-            hasElement = true;
-            result += output[element];
-        }
-    }
+//     for (let index = 0; index < keys.length; index++) {
+//         const element = keys[index];
+//         if( element.startsWith(group) )
+//         {
+//             hasElement = true;
+//             result += output[element];
+//         }
+//     }
 
-    if(hasElement){
-        return output['header'] + result;
-    }
+//     if(hasElement){
+//         return output['header'] + result;
+//     }
 
-    return null;
-}
+//     return null;
+// }
 
 // GET /api/device/file/:fileID/ - get a generic device file
 exports.getGenericFile = function (req, res) {
@@ -252,45 +253,111 @@ exports.getDeviceIPTV = function (req, res) {
     });
 };
 
+// exports.getDeviceIPTVGroup = function (req, res) {
+//     DeviceHandler.AuthenticateDevice(req.params.deviceID, req.params.secret, function (error, device) {
+//         if (error != null) {
+//             res.statusCode = error.errorCode;
+//             res.json({ "Error": error.message });
+//         }
+//         else {
+//             if (device.IPTV != null && device.IPTV != '') {
+//                 getIptvPlaylist(device.IPTV, function (error, response) {
+//                     if (error != null) {
+//                         res.statusCode = 500;
+//                         res.json({ "Error": error.message.toString() });
+//                     }
+//                     else {
+//                         if (response.statusCode != 200) {
+//                             res.statusCode = response.statusCode;
+//                             res.send(response.content);
+//                         }
+//                         else {
+//                             console.log(req.params.group);
+//                             var groupPlaylist = parseGroupFromPlaylist(req.params.group, response.content);
+//                             if (groupPlaylist == null) {
+//                                 res.statusCode = 404;
+//                                 res.json({ "Error": "IPTV Group not found" });
+//                             }
+//                             else {
+//                                 fileName = `iptv_channels_${req.params.group}.m3u`;
+//                                 res.statusCode = response.statusCode;
+//                                 res.set('Content-Disposition', 'attachment; filename="' + fileName + '"')
+//                                 res.send(groupPlaylist);
+//                             }
+//                         }
+//                     }
+//                 });
+//             }
+//             else {
+//                 res.statusCode = 404;
+//                 res.json({ "Error": "IPTV Source not found" });
+//             }
+//         }
+//     });
+// };
+
 exports.getDeviceIPTVGroup = function (req, res) {
     DeviceHandler.AuthenticateDevice(req.params.deviceID, req.params.secret, function (error, device) {
         if (error != null) {
             res.statusCode = error.errorCode;
             res.json({ "Error": error.message });
-        }
-        else {
-            if (device.IPTV != null && device.IPTV != '') {
+        } else {
+            if (device.IPTV != null && device.IPTV !== '') {
                 getIptvPlaylist(device.IPTV, function (error, response) {
                     if (error != null) {
                         res.statusCode = 500;
                         res.json({ "Error": error.message.toString() });
-                    }
-                    else {
-                        if (response.statusCode != 200) {
+                    } else {
+                        if (response.statusCode !== 200) {
                             res.statusCode = response.statusCode;
                             res.send(response.content);
-                        }
-                        else {
-                            console.log(req.params.group);
-                            var groupPlaylist = parseGroupFromPlaylist(req.params.group, response.content);
+                        } else {
+                            var group = req.params.group; // Group filter passed in the request
+                            var groupPlaylist = parseGroupFromPlaylist(group, response.content);
+                            
                             if (groupPlaylist == null) {
                                 res.statusCode = 404;
                                 res.json({ "Error": "IPTV Group not found" });
-                            }
-                            else {
-                                fileName = `iptv_channels_${req.params.group}.m3u`;
-                                res.statusCode = response.statusCode;
-                                res.set('Content-Disposition', 'attachment; filename="' + fileName + '"')
+                            } else {
+                                const fileName = `iptv_channels_${group}.m3u`;
+                                res.statusCode = 200;
+                                res.set('Content-Disposition', 'attachment; filename="' + fileName + '"');
                                 res.send(groupPlaylist);
                             }
                         }
                     }
                 });
-            }
-            else {
+            } else {
                 res.statusCode = 404;
                 res.json({ "Error": "IPTV Source not found" });
             }
         }
     });
 };
+
+// Function to parse the playlist and extract entries matching the group-title
+function parseGroupFromPlaylist(group, playlistContent) {
+    const entries = playlistContent.split('\n');
+    let filteredPlaylist = '';
+    
+    let currentEntry = ''; // To store each complete entry (metadata + URL)
+
+    // Loop through the entries and filter based on group-title
+    entries.forEach(line => {
+        if (line.startsWith('#EXTINF')) {
+            currentEntry = line + '\n';  // Start building a new entry
+        } else if (line.startsWith('http')) {
+            currentEntry += line + '\n'; // Add the URL to the current entry
+
+            // Check if the current entry matches the group-title
+            const groupMatch = currentEntry.match(/group-title="([^"]+)"/);
+            if (groupMatch && groupMatch[1].toLowerCase().includes(group.toLowerCase())) {
+                filteredPlaylist += currentEntry; // Add the entry to the filtered playlist if it matches
+            }
+
+            currentEntry = ''; // Reset for the next entry
+        }
+    });
+
+    return filteredPlaylist.length > 0 ? filteredPlaylist : null;
+}
