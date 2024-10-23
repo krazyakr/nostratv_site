@@ -8,4 +8,5 @@ export const appConfig = () => ({
     DATABASE_NAME: process.env.DATABASE_NAME,
   
     NFL_URL: process.env.NFL_URL,
+    F1_URL: process.env.F1_URL,
   });
