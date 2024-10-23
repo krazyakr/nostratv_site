@@ -9,4 +9,5 @@ export const appConfig = () => ({
   
     NFL_URL: process.env.NFL_URL,
     F1_URL: process.env.F1_URL,
+    LIVETV_URL: process.env.LIVETV_URL,
   });

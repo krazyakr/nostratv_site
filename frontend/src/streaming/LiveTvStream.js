@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';  // Import useNavigate instead of useHistory
 import { Container, ListGroup, Alert, Button } from 'react-bootstrap';
 
-function MotorsportsEvent() {
+function LiveTvStream() {
     const { gameUrl } = useParams();  // Extract gameUrl from the route parameters
     const baseUrl = process.env.REACT_APP_BACKEND_URL;
     const navigate = useNavigate();  // Initialize useNavigate to programmatically navigate
@@ -13,14 +13,14 @@ function MotorsportsEvent() {
 
     useEffect(() => {
         // Fetch the video URLs for the specific game from the backend
-        fetch(`${baseUrl}/streaming/motorsports/event/video/${gameUrl}`)
+        fetch(`${baseUrl}/streaming/livetv/event/video/${gameUrl}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 return response.json();  // Assuming the API returns a JSON response
             })
-            .then(data => setVideoUrls(data.videoUrls))  // Update with the videoUrls array
+            .then(data => setVideoUrls(data.links))  // Update with the videoUrls array
             .catch(err => {
                 setError(err.message);
             });
@@ -31,12 +31,12 @@ function MotorsportsEvent() {
     };
 
     const handleBackClick = () => {
-        navigate('/streaming/motorsports');  // Navigate back to the NFL listing page
+        navigate('/streaming/livetv');  // Navigate back to the NFL listing page
     };
 
     return (
         <Container className="mt-5">
-            <h1>Motorsports Event Videos</h1>
+            <h1>LiveTV Stream</h1>
 
             {/* Display error if fetching fails */}
             {error && <Alert variant="danger">Error: {error}</Alert>}
@@ -55,7 +55,7 @@ function MotorsportsEvent() {
                     {/* Spacing of 50px between list and button */}
                     <div className="mt-5 d-flex justify-content-end">
                         <Button variant="secondary" onClick={handleBackClick}>
-                            Back to Motorsports Events
+                            Back to LiveTV Events
                         </Button>
                     </div>
                 </>
@@ -69,7 +69,7 @@ function MotorsportsEvent() {
                     <h3>Now Playing:</h3>
                     <iframe
                         src={selectedVideo}
-                        title={`Motorsport Video - ${selectedVideo}`}
+                        title={`LiveTV - ${selectedVideo}`}
                         width="100%"
                         height="500px"
                         frameBorder="0"
@@ -82,4 +82,4 @@ function MotorsportsEvent() {
     );
 }
 
-export default MotorsportsEvent;
+export default LiveTvStream;

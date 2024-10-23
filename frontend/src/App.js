@@ -7,6 +7,8 @@ import NflPage from './streaming/NflPage';  // Import the NFL page
 import NflGame from './streaming/NflGame';  // Import the NFL game page
 import MotorsportsPage from './streaming/MotorsportsPage';
 import MotorsportsEvent from './streaming/MotorsportsEvent';
+import LiveTvPage from './streaming/LiveTvPage';
+import LiveTvStream from './streaming/LiveTvStream';
 
 function App() {
 
@@ -23,7 +25,7 @@ function App() {
               <NavDropdown title="Streaming" id="basic-nav-dropdown">
                 <NavDropdown.Item as={Link} to="/streaming/nfl">NFL</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/streaming/motorsports">Motorsports</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/livetv">Live TV</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/streaming/livetv">Live TV</NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>
@@ -36,6 +38,8 @@ function App() {
           <Route path="/streaming/nfl/game/:gameUrl" element={<NflGame />} />  {/* NFL Game Page */}
           <Route path="/streaming/motorsports" element={<MotorsportsPage />} />  {/* Motorsports Page */}
           <Route path="/streaming/motorsports/event/:gameUrl" element={<MotorsportsEvent />} />  {/* Motorsports Page */}
+          <Route path="/streaming/livetv" element={<LiveTvPage />} />  {/* Live TV Page */}
+          <Route path="/streaming/livetv/event/:gameUrl" element={<LiveTvStream />} />  {/* Live TV Stream Page */}
           {/* You can add other routes like Devices, F1, Live TV here */}
         </Routes>
       </>
