@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { NflService } from './nfl.service';
-import { NflController } from './nfl.controler';
+import { NflController } from './nfl.controller';
 
 @Module({
     imports: [],
