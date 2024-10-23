@@ -1,8 +1,8 @@
-# nostratv_site
+# NostraTV - Sports replays and Live Streaming
 
-The NOStraTV website to manage the clients and services (LiveTV, Sports Events and VoD).
+The NostraTV website to manage the clients and services (LiveTV, Sports Events and VoD).
 
 
-**Build**
+<!-- **Build** -->
 
-Use the `.build/createDockerImage.sh` script to build a Docker image with your local source code. 
+<!-- Use the `.build/createDockerImage.sh` script to build a Docker image with your local source code.  -->
