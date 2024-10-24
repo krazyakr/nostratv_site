@@ -2,15 +2,20 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Device } from "./device.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcryptjs';
-import { BadRequestException, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, Injectable } from "@nestjs/common";
+import { CacheService } from './cache.service';
 
+@Injectable()
 export class DeviceService {
     private readonly logger = new Logger(DeviceService.name);
-    
+    private cacheService: CacheService;
+
     constructor(
         @InjectRepository(Device)
-        private deviceRepository: Repository<Device>
-    ) {}
+        private deviceRepository: Repository<Device>,
+    ) {
+        this.cacheService = new CacheService(this.fetchIptvContent.bind(this));
+    }
 
     async getAllDevices(): Promise<Device[]> {
         return this.deviceRepository.find();
@@ -55,17 +60,38 @@ export class DeviceService {
             return null;
         }
 
+        // Check cache first
+        const cacheKey = `iptvContent:${deviceName}`;
+        let cachedContent = this.cacheService.get(cacheKey);
+        if (cachedContent) {
+            this.logger.debug(`Returning cached IPTV content for ${deviceName}`);
+            return cachedContent;
+        }
+
+        // Fetch and cache content
+        const content = await this.fetchIptvContent(cacheKey);
+        this.cacheService.set(cacheKey, content);
+
+        return content;
+    }
+
+    private async fetchIptvContent(cacheKey: string): Promise<string> {
+        const deviceName = cacheKey.split(':')[1];
+        const device = await this.findDeviceBydeviceName(deviceName);
+        if (!device) {
+            throw new Error(`Device not found: ${deviceName}`);
+        }
+
         this.logger.debug(`Fetching IPTV content from ${device.iptvLink}`);
         const response = await fetch(device.iptvLink);
         if (!response.ok) {
             throw new InternalServerErrorException('Failed to fetch IPTV content', response.statusText);
         }
 
-        const content = await response.text();
-        return content;
+        return await response.text();
     }
 
-    async updateDevice( deviceName: string, password: string, iptvLink: string): Promise<void> {
+    async updateDevice(deviceName: string, password: string, iptvLink: string): Promise<void> {
         const device = await this.findDeviceBydeviceName(deviceName);
 
         if (!device) {
