@@ -2,7 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Device } from "./device.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcryptjs';
-import { InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 
 export class DeviceService {
     private readonly logger = new Logger(DeviceService.name);
@@ -17,6 +17,12 @@ export class DeviceService {
     }
 
     async createDevice(deviceName: string, password: string, iptvLink?: string): Promise<Device> {
+        // Check if the device already exists
+        const existingDevice = await this.findDeviceBydeviceName(deviceName);
+        if (existingDevice) {
+            throw new BadRequestException('Device already exists');
+        }
+
         // Generate a salt
         const salt = await bcrypt.genSalt();
         // Hash the password with the salt
@@ -59,7 +65,15 @@ export class DeviceService {
         return content;
     }
 
-    async updateDevice(device: Device, password: string, iptvLink: string): Promise<void> {
+    async updateDevice( deviceName: string, password: string, iptvLink: string): Promise<void> {
+        const device = await this.findDeviceBydeviceName(deviceName);
+
+        if (!device) {
+            throw new NotFoundException('Device not found');
+        }
+
+        this.logger.debug(`Updating device with name ${deviceName} with password ${password} and IPTV link ${iptvLink}`);
+        
         if (password) {
             // Generate a salt
             const salt = await bcrypt.genSalt();

@@ -9,6 +9,9 @@ import MotorsportsPage from './streaming/MotorsportsPage';
 import MotorsportsEvent from './streaming/MotorsportsEvent';
 import LiveTvPage from './streaming/LiveTvPage';
 import LiveTvStream from './streaming/LiveTvStream';
+import DevicesPage from './device/DevicesPage';  // Import the devices page
+import NewDevicePage from './device/NewDevicePage';
+import EditDevicePage from './device/EditDevicePage';
 
 function App() {
 
@@ -40,6 +43,9 @@ function App() {
           <Route path="/streaming/motorsports/event/:gameUrl" element={<MotorsportsEvent />} />  {/* Motorsports Page */}
           <Route path="/streaming/livetv" element={<LiveTvPage />} />  {/* Live TV Page */}
           <Route path="/streaming/livetv/event/:gameUrl" element={<LiveTvStream />} />  {/* Live TV Stream Page */}
+          <Route path="/devices" element={<DevicesPage />} />  {/* Devices Page */}
+          <Route path="devices/create" element={<NewDevicePage />} />  {/* Create Device Page */}
+          <Route path="devices/edit/:deviceName" element={<EditDevicePage />} />  {/* Edit Device Page */}
           {/* You can add other routes like Devices, F1, Live TV here */}
         </Routes>
       </>

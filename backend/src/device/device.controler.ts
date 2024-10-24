@@ -11,6 +11,7 @@ export class DeviceController {
     
     @Get('/')
     async getAllDevices() {
+        this.logger.log('Fetching all devices');
         const devices = await this.deviceService.getAllDevices();
         return devices.map(device => ({
             id: device.id,
@@ -25,12 +26,7 @@ export class DeviceController {
         @Body('password') password: string,
         @Body('iptvLink') iptvLink?: string
     ) {
-        // Check if the device already exists
-        const existingDevice = await this.deviceService.findDeviceBydeviceName(deviceName);
-        if (existingDevice) {
-            throw new BadRequestException('Device already exists');
-        }
-
+        this.logger.log(`Creating device with name ${deviceName}`);
         // Create the device
         const device = await this.deviceService.createDevice(deviceName, password, iptvLink);
         return { message: 'Device created successfully', data: {
@@ -46,17 +42,16 @@ export class DeviceController {
         @Body('password') password?: string,
         @Body('iptvLink') iptvLink?: string
     ) {
-        const device = await this.deviceService.findDeviceBydeviceName(deviceName);
-        if (!device) {
-            throw new NotFoundException('Device not found');
-        }
+        this.logger.log(`Updating device with name ${deviceName}`);
 
-        await this.deviceService.updateDevice(device, password, iptvLink);
+        await this.deviceService.updateDevice(deviceName, password, iptvLink);
         return { message: 'Device updated successfully' };
     }
 
     @Get('/:deviceName')
     async getDevice(@Param('deviceName') deviceName: string) {
+        this.logger.log(`Fetching device with name ${deviceName}`);
+        
         const device = await this.deviceService.findDeviceBydeviceName(deviceName);
         if (!device) {
             throw new NotFoundException('Device not found');
