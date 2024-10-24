@@ -58,4 +58,4 @@ jobs:
           script: |
             export CR_PAT=${{ secrets.CR_PAT }}
             cd ${{ vars.APP_PATH }}
-            ./start.sh --tag ${{ github.ref_name }} --volume ${{ vars.REMOTE_VOLUME_PATH }}
+            ./start.sh --tag ${{ github.ref_name }}

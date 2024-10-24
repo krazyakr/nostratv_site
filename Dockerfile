@@ -1,14 +1,50 @@
-FROM node:alpine
+# Dockerfile
+FROM node:18 AS builder
 
-WORKDIR /usr/app/nostratv_site
+# Set the working directory for the backend
+WORKDIR /app/backend
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash openssh netcat-openbsd
+# Copy backend files and install dependencies
+COPY backend/package*.json ./
+RUN npm install
+COPY backend/ ./
+COPY backend/.env.production ./.env
+RUN npm run build
 
-ADD src /usr/app/nostratv_site/
-COPY .config/production.env /usr/app/nostratv_site/.env
-RUN cd /usr/app/nostratv_site && npm install
+# Set the working directory for the frontend
+WORKDIR /app/frontend
 
-RUN mkdir /usr/local/nostratv_site/
+# Copy frontend files and install dependencies
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ ./
+COPY frontend/.env.production ./.env
+RUN npm run build
 
-CMD ["npm", "start"]
+# Final image
+FROM nginx:alpine
+
+# Copy the built frontend to Nginx
+COPY --from=builder /app/frontend/build /usr/share/nginx/html
+
+# Copy the built NestJS app and necessary dependencies
+COPY --from=builder /app/backend/dist /app/backend/dist
+COPY --from=builder /app/backend/package*.json /app/backend/
+COPY --from=builder /app/backend/.env /app/backend/.env 
+
+# Install production dependencies for the backend
+RUN apk add --no-cache nodejs npm \
+    && cd /app/backend \
+    && npm install --only=production
+
+# Install PM2 and use it to start the NestJS application
+RUN npm install -g pm2
+
+# Copy Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose ports
+EXPOSE 80 3000
+
+# Start Nginx and NestJS
+CMD ["sh", "-c", "nginx && cd /app/backend && pm2 start dist/main.js --no-daemon"]
