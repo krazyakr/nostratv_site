@@ -1,6 +1,6 @@
 export class CacheService {
     private cache: Map<string, { value: string, timestamp: number }> = new Map();
-    private readonly CACHE_DURATION = 2 * 60 * 1000; // 2 minutes in milliseconds
+    private readonly CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
     constructor(private readonly refreshFunction: (key: string) => Promise<string>) {
         this.startAutoRefresh();
