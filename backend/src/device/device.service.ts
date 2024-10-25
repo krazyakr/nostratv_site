@@ -1,9 +1,15 @@
-import { InjectRepository } from "@nestjs/typeorm";
+import { Injectable, InternalServerErrorException, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { Device } from "./device.entity";
-import { Repository } from "typeorm";
 import * as bcrypt from 'bcryptjs';
-import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, Injectable } from "@nestjs/common";
+import fetch from 'node-fetch';
 import { CacheService } from './cache.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+interface IptvEntry {
+    extinf: string;
+    url: string;
+}
 
 @Injectable()
 export class DeviceService {
@@ -89,6 +95,45 @@ export class DeviceService {
         }
 
         return await response.text();
+    }
+
+    async getDeviceIptvGroupContent(deviceName: string, password: string, groupTitleSubstring: string): Promise<string> {
+        const content = await this.getDeviceIptvContent(deviceName, password);
+        if (!content) {
+            return null;
+        }
+
+        const entries = this.parseIptvContent(content);
+        const filteredEntries = this.filterByGroupTitle(entries, groupTitleSubstring);
+
+        return filteredEntries.map(entry => `${entry.extinf}\n${entry.url}`).join('\n');
+    }
+
+    private parseIptvContent(content: string): IptvEntry[] {
+        const lines = content.split('\n');
+        const entries: IptvEntry[] = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('#EXTINF')) {
+                const extinf = lines[i];
+                const url = lines[i + 1];
+                entries.push({ extinf, url });
+            }
+        }
+
+        return entries;
+    }
+
+    private filterByGroupTitle(entries: IptvEntry[], groupTitleSubstring: string): IptvEntry[] {
+        const lowerCaseGroupTitleSubstring = groupTitleSubstring.toLowerCase();
+        return entries.filter(entry => {
+            const match = entry.extinf.match(/group-title="([^"]+)"/);
+            if (match) {
+                const groupTitle = match[1].toLowerCase();
+                return groupTitle.includes(lowerCaseGroupTitleSubstring);
+            }
+            return false;
+        });
     }
 
     async updateDevice(deviceName: string, password: string, iptvLink: string): Promise<void> {

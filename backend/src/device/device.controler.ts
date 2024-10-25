@@ -70,12 +70,31 @@ export class DeviceController {
         @Param('password') password: string,
         @Res() res: Response
     ) {
+        this.logger.log(`Fetching IPTV content from device with name ${deviceName}`);
         const content = await this.deviceService.getDeviceIptvContent(deviceName, password);
         if (!content) {
             throw new NotFoundException('Device not found or password incorrect');
         }
 
         const fileName = "iptv_channels.m3u";
+        res.set('Content-Disposition', 'attachment; filename="' + fileName + '"');
+        return res.send(content);
+    }
+
+    @Get('/:deviceName/:password/iptv/:group')
+    async getDeviceIptvContentByGroup(
+        @Param('deviceName') deviceName: string,
+        @Param('password') password: string,
+        @Param('group') group: string,
+        @Res() res: Response
+    ) {
+        this.logger.log(`Fetching IPTV content from device with name ${deviceName} for group ${group}`);
+        const content = await this.deviceService.getDeviceIptvGroupContent(deviceName, password, group);
+        if (!content) {
+            throw new NotFoundException('Device not found or password incorrect');
+        }
+
+        const fileName = `iptv_channels_${group}.m3u`;
         res.set('Content-Disposition', 'attachment; filename="' + fileName + '"');
         return res.send(content);
     }
