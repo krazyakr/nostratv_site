@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",                          // CommonJS module system for Node.js
+    "declaration": true,                           // Generate .d.ts files for TypeScript types
+    "removeComments": true,                        // Remove comments in compiled JavaScript files
+    "emitDecoratorMetadata": true,                 // Enable metadata for decorators
+    "experimentalDecorators": true,                // Enable experimental decorator support
+    "allowSyntheticDefaultImports": true,          // Allows default imports from modules with no default
+    "target": "ES2021",                            // Target ECMAScript 2021 for modern JS features
+    "sourceMap": true,                             // Generate source maps for debugging
+    "outDir": "./dist",                            // Output directory for compiled JavaScript files
+    "baseUrl": "./",                               // Base URL for module resolution
+    "incremental": true,                           // Enable incremental compilation for faster builds
+    "skipLibCheck": true,                          // Skip type checking of declaration files for faster builds
+    "strictNullChecks": false,                     // Disable strict null checks
+    "noImplicitAny": false,                        // Disable implicit `any` checks
+    "strictBindCallApply": false,                  // Disable strict bind/call/apply checks
+    "forceConsistentCasingInFileNames": true,      // Enforce consistent casing in file names
+    "noFallthroughCasesInSwitch": true             // Ensure no fallthrough cases in switch statements
+  },
+  "include": [
+    "src/**/*.ts"                                  // Include all .ts files in the `src` folder
+  ],
+  "exclude": [
+    "node_modules",                                // Exclude `node_modules`
+    "dist"                                         // Exclude output `dist` folder
+  ]
+}

@@ -16,6 +16,7 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+coverage/
 
 # nyc test coverage
 .nyc_output
@@ -35,9 +36,12 @@ build/Release
 # Build directory
 build/
 
+# Distribution directory
+dist/
+
 # Dependency directories
-src/node_modules/
-src/jspm_packages/
+node_modules/
+jspm_packages/
 
 # TypeScript v1 declaration files
 typings/
@@ -63,12 +67,45 @@ typings/
 # next.js build output
 .next
 
+# Nuxt.js build output
+.nuxt
+
+# Gatsby files
+.cache/
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
 # Visual Studio Code environment
 .vscode/
+.history/
 
-# Shared filesystem
-shared_filesystem/
-shared_filesystem
-
+# macOS files
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Compiled Python files
+*.pyc
+
+# Private key files
 id_rsa
