@@ -63,4 +63,5 @@ docker run \
     --name nostratv_web -d --rm \
     --network dmz-network \
     --network nostratv-network \
+    -p 80:80 \
     ghcr.io/krazyakr/nostratv:$IMAGE_TAG

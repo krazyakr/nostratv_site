@@ -1,6 +1,9 @@
 # Dockerfile
 FROM node:18 AS builder
 
+# Set the build argument for mode
+ARG MODE=production
+
 # Set the working directory for the backend
 WORKDIR /app/backend
 
@@ -8,7 +11,7 @@ WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm install
 COPY backend/ ./
-COPY backend/.env.production ./.env
+COPY backend/.env.${MODE} ./.env
 RUN npm run build
 
 # Set the working directory for the frontend
@@ -18,11 +21,14 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ ./
-COPY frontend/.env.production ./.env
+COPY frontend/.env.${MODE} ./.env
 RUN npm run build
 
 # Final image
 FROM nginx:alpine
+
+# Set the build argument for mode
+ARG MODE=production
 
 # Copy the built frontend to Nginx
 COPY --from=builder /app/frontend/build /usr/share/nginx/html
@@ -44,7 +50,7 @@ RUN npm install -g pm2
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose ports
-EXPOSE 80 3000
+EXPOSE 80
 
 # Start Nginx and NestJS
 CMD ["sh", "-c", "nginx && cd /app/backend && pm2 start dist/main.js --no-daemon"]
