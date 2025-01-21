@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';  // Import useNavigat
 import { Container, ListGroup, Alert, Button } from 'react-bootstrap';
 
 function NflGame() {
-    const { gameUrl } = useParams();  // Extract gameUrl from the route parameters
+    const { gameId } = useParams();  // Extract gameUrl from the route parameters
     const baseUrl = process.env.REACT_APP_BACKEND_URL;
     const navigate = useNavigate();  // Initialize useNavigate to programmatically navigate
 
@@ -13,7 +13,7 @@ function NflGame() {
 
     useEffect(() => {
         // Fetch the video URLs for the specific game from the backend
-        fetch(`${baseUrl}/streaming/nfl/event/video/${gameUrl}`)
+        fetch(`${baseUrl}/streaming/nfl/event/video/${gameId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -24,7 +24,7 @@ function NflGame() {
             .catch(err => {
                 setError(err.message);
             });
-    }, [baseUrl, gameUrl]);
+    }, [baseUrl, gameId]);
 
     const handleVideoClick = (videoUrl) => {
         setSelectedVideo(videoUrl.startsWith("//") ? `https:${videoUrl}` : videoUrl);  // Prepend https: to protocol-relative URLs
