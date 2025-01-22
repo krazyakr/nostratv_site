@@ -3,11 +3,18 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { appConfig } from 'src/app.config';
 import { Logger } from '@nestjs/common';
-
+import { StreamCategory, StreamEvent } from '../streamEvent.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 @Injectable()
 export class NflService {
     private readonly baseUrl: string = appConfig().NFL_URL; // Use the configured base URL
     private readonly logger = new Logger(NflService.name);
+
+    constructor(
+        @InjectRepository(StreamEvent)
+        private streamEventRepository: Repository<StreamEvent>
+    ) {}
 
     async getAvailableEvents(): Promise<{ events: Array<{ title: string, url: string, category: string, description: string }> }> {
         this.logger.log('Fetching available events');
@@ -32,20 +39,32 @@ export class NflService {
             const $ = cheerio.load(html);
 
             const events = [];
+            const promises = [];
 
             $('.short_content').each((_, element) => {
                 const titleElement = $(element).find('h3 a');
                 const title = titleElement.text().trim();
                 const eventUrl = titleElement.attr('href');
-
-                const category = $(element).find('.short_cat a').text().trim();
                 const description = $(element).find('.short_descr p').text().trim();
-
+                
                 if (title && eventUrl) {
-                    events.push({ title, url: eventUrl, category, description });
+                    promises.push((async () => {
+                        const existingEvent = await this.streamEventRepository.findOne({ where: { url: eventUrl } });
+                        if (existingEvent) {
+                            events.push({id: existingEvent.id, title: existingEvent.name, url: existingEvent.url, category: existingEvent.category, description });
+                        } else {
+                            const newEvent = await this.streamEventRepository.save({
+                                name: title,
+                                url: eventUrl,
+                                StreamEventCategory: StreamCategory.NFL
+                            });
+                            events.push({id: newEvent.id, title: newEvent.name, url: newEvent.url, category: newEvent.category, description });
+                        }
+                    })());
                 }
             });
 
+            await Promise.all(promises);
             return events;
         } catch (error) {
             console.error(`Error fetching events from page ${page}:`, error);
@@ -53,7 +72,13 @@ export class NflService {
         }
     }
 
-    async getVideoLinks(eventUrl: string): Promise<{ videoUrls: string[] }> {
+    async getVideoLinks(eventId: string): Promise<{ videoUrls: string[] }> {
+        const event = await this.streamEventRepository.findOne({ where: { id: eventId }});
+        if (!event) {
+            throw new Error('Event not found');
+        }
+
+        const eventUrl = event.url;
         this.logger.log(`Fetching video links for event: ${eventUrl}`);
         const fullUrl = `${this.baseUrl}/${eventUrl}`; // Append base URL for event page
     

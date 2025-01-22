@@ -38,7 +38,7 @@ function NflPage() {
               <h5>{replay.title}</h5>
               <p>{replay.description}</p>
               {/* Assuming there's a link to the replay video */}
-              <a href={`/streaming/nfl/game${replay.url}`} rel="noopener noreferrer">
+              <a href={`/streaming/nfl/game/${replay.id}`} rel="noopener noreferrer">
                 Watch Replay
               </a>
             </ListGroup.Item>
