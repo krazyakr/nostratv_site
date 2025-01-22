@@ -38,7 +38,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />  {/* Home Page */}
           <Route path="/streaming/nfl" element={<NflPage />} />               {/* NFL Page */}
-          <Route path="/streaming/nfl/game/:gameUrl" element={<NflGame />} />  {/* NFL Game Page */}
+          <Route path="/streaming/nfl/game/:gameId" element={<NflGame />} />  {/* NFL Game Page */}
           <Route path="/streaming/motorsports" element={<MotorsportsPage />} />  {/* Motorsports Page */}
           <Route path="/streaming/motorsports/event/:gameUrl" element={<MotorsportsEvent />} />  {/* Motorsports Page */}
           <Route path="/streaming/livetv" element={<LiveTvPage />} />  {/* Live TV Page */}

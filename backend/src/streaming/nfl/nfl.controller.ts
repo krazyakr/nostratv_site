@@ -10,8 +10,8 @@ export class NflController {
         return this.nflService.getAvailableEvents();
     }
 
-    @Get('event/video/:eventUrl')
-    async getVideo(@Param('eventUrl') eventUrl: string) {
-        return this.nflService.getVideoLinks(eventUrl);
+    @Get('event/video/:eventId')
+    async getVideo(@Param('eventId') eventId: string) {
+        return this.nflService.getVideoLinks(eventId);
     }
 }
